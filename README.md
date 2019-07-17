@@ -1,5 +1,5 @@
 # sox_batch_python
-Batch convert music files recursively to render spectrogram using Sox. It will scan for music file recursively from a directory and generate spectrogram PNGs using Sox backend. By default those are saved into `Spectrogram` folder relative to each folder where the music resides. 
+Sox batch processing that recursively find music files in a given directory and generate spectrogram for each of them. By default those are saved into `Spectrogram` folder relative to each folder where the music resides. 
 
 # Limitations
 Currently only support processing 'flac, mp3 and wav' since those are the default decoder that sox support. Might support more file format using ffmpeg in the future for those unsupported music format.
