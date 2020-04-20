@@ -6,6 +6,8 @@ import argparse
 
 # SOX_EXE = 'c:\Program Files (x86)\sox-14-4-2\sox.exe'
 SOX_EXE = os.path.join('sox', 'sox.exe')
+SOXI_EXE = os.path.join('sox', 'soxi.exe')
+
 MUSIC_DIRS= []
 
 # Display options on the output graph
@@ -31,7 +33,6 @@ parser.add_argument('-t', '--title',
                     dest='title')
                    
 opts = parser.parse_args()
-
 print(opts.input_dirs)
 # wait = input("PRESS ENTER TO CONTINUE.")
 
@@ -75,11 +76,40 @@ for dir in opts.input_dirs:
                     output_fpath = os.path.join(output_dir, name + ".png")
                  
                 # default command
-                cmd = [SOX_EXE, fpath, '-n', 'spectrogram', '-o', output_fpath]
+                cmd = [SOX_EXE, fpath, '-n', 'spectrogram', '-h', '-o', output_fpath]
+                
+                # add footer text at bottom left, (file name - Created with Sox - http://castellaine.net)
+                footer = "%s - Created with Sox - http://castellaine.net" % (title) 
+                cmd.append('-c')
+                cmd.append(footer)
                  
                 if opts.title == True:
+                    # get song metadata from header
+                    metadata = ['-t', '-r', '-c', '-d', '-b', '-p', '-e']
+#                     −t Show detected file-type.
+#                     −r Show sample-rate.
+#                     −c Show number of channels.
+#                     −s Show number of samples (0 if unavailable).
+#                     −d Show duration in hours, minutes and seconds (0 if unavailable). Equivalent to number of samples
+#                     divided by the sample-rate.
+#                     −D Show duration in seconds (0 if unavailable).
+#                     −b Show number of bits per sample (0 if not applicable).
+#                     −B Show the bitrate averaged over the whole file (0 if unavailable).
+#                     −p Show estimated sample precision in bits.
+#                     −e Show the name of the audio encoding.
+#                     −a Show file comments (annotations) if available.
+
+                    result = []
+                    for _ in metadata:
+                        cmd_soxi = [SOXI_EXE, _, fpath]
+                        output = subprocess.check_output(cmd_soxi, shell=True)
+                        print(output.decode('utf-8').rstrip())
+                        result.append(output.decode('utf-8').rstrip())
+                    
+                    # title format: type, 44100 Hz, 16 bits, 2 channels
+                    header = "%s, %s Hz, %s bits, %s channels, %s" % (result[6], result[1], result[4], result[2], result[3])
                     cmd.append('-t')
-                    cmd.append(title)
+                    cmd.append(header)
      
                 print('Analyzing ', name)
                 subprocess.call(cmd, shell=True)
