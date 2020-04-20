@@ -103,7 +103,6 @@ for dir in opts.input_dirs:
                     for _ in metadata:
                         cmd_soxi = [SOXI_EXE, _, fpath]
                         output = subprocess.check_output(cmd_soxi, shell=True)
-                        print(output.decode('utf-8').rstrip())
                         result.append(output.decode('utf-8').rstrip())
                     
                     # title format: type, 44100 Hz, 16 bits, 2 channels
